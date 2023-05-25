@@ -1,5 +1,5 @@
 extends CharacterBody2D
-class_name PlatformerBody2D
+class_name PlatformerPlayer2D
 """
 A 2D platformer controller with:
 - Separated ground and air motion

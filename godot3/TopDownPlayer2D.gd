@@ -1,5 +1,5 @@
-extends CharacterBody2D
-class_name TopDownBody2D
+extends KinematicBody2D
+class_name TopDownPlayer2D
 
 """
 Top-down Player Controller.
@@ -7,7 +7,7 @@ Top-down Player Controller.
 If acceleration or deceleration are set to <= 0.0,
 	it will be treated as instant
 
-For use with Godot v4.x
+For use with Godot v3.x
 """
 
 const LEFT_ACTION := "ui_left"
@@ -16,9 +16,12 @@ const UP_ACTION := "ui_up"
 const DOWN_ACTION := "ui_down"
 
 
-@export var move_speed := 320.0
-@export var acceleration := 3200.0
-@export var deceleration := 3200.0
+export var move_speed := 320.0
+export var acceleration := 3200.0
+export var deceleration := 3200.0
+
+
+var velocity :Vector2
 
 
 func _physics_process(delta: float) -> void:
@@ -33,4 +36,4 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity = motion
 	
-	move_and_slide()
+	velocity = move_and_slide(velocity)
