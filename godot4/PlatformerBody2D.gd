@@ -38,11 +38,16 @@ cloud_layers - physics layers can be set as "clouds" (aka 'diveable platforms')
 		Use segment shapes for the collision shape and set
 			them as having "One Way Collision"
 
-speed/acceleration/deceleration - If the player is throttling,
-	their speed will accelerate up to the target speed.
-	If they are moving faster than the target speed, they will decelerate.
-	If they are throttling in the opposite direction, they will accelerate.
+speed/acceleration/deceleration/turn_rate -
+	In general, the player's speed will accelerate up to the target speed
+		using the acceleration
+	If they are throttling in the opposite direction, they will accelerate
+		using the turn_accel instead.
+	If they are not throttling at all, the will decelerate using 
+		the deceleration value.
 	Momentum will be conserved.
+	If any of these accelerations is set to < 0.0, it will be treated as
+		instant acceleration
 
 
 air jumps - Each element of the air jump array determines how much vertical
@@ -64,11 +69,13 @@ const DIVE_ACTION := "ui_down"
 @export_group("Ground Behaviour", "ground_")
 @export var ground_speed := 400.0
 @export var ground_acceleration := 8000.0
+@export var ground_turn_accel := 8000.0
 @export var ground_deceleration := 8000.0
 
 @export_group("Air Behaviour", "air_")
 @export var air_speed := 300.0
 @export var air_acceleration := 1500.0
+@export var air_turn_accel := 8000.0
 @export var air_deceleration := 0.0
 
 
@@ -131,34 +138,40 @@ func _physics_process(delta :float):
 		collision_mask = collision_mask | cloud_layers
 	
 	
-	# Motion
 	var speed :float
 	var accel :float
 	var decel :float
+	var turn_acc :float
+	
+	# -- Determine which motion to use
 	if is_on_floor():
 		speed = ground_speed
 		accel = ground_acceleration
 		decel = ground_deceleration
+		turn_acc = ground_turn_accel
 	else:
 		speed = air_speed
 		accel = air_acceleration
 		decel = air_deceleration
+		turn_acc = air_turn_accel
 	
 	var thdir := int(sign(throttle))
 	var hdir := int(sign(velocity.x))
 	
-	# -- Not inputting a direction
-	if thdir == 0:
-		velocity.x = move_toward(velocity.x, 0.0, decel * delta)
-	# -- Throttling towards motion direction
-	elif thdir == hdir:
-		if abs(velocity.x) < speed:
-			velocity.x = move_toward(velocity.x, speed * thdir, accel * delta)
-		else:
-			velocity.x = move_toward(velocity.x, speed * thdir, decel * delta)
-	# -- Throttling against motion direction
+	# -- Determine which accel to use
+	var acc :float
+	if thdir == 0 or thdir == hdir and abs(velocity.x) > speed:
+		acc = decel
+	elif thdir == -hdir:
+		acc = turn_acc
 	else:
-		velocity.x = move_toward(velocity.x, speed * thdir, accel * delta)
+		acc = accel
+	
+	# -- Apply throttle
+	if acc >= 0.0:
+		velocity.x = move_toward(velocity.x, speed * thdir, acc * delta)
+	else:
+		velocity.x = speed * thdir
 	
 	
 	# Handle Jump
