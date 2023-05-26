@@ -34,3 +34,19 @@ It will not be updated regularly.
 ### TopDownPlayer2D
 	- A simple implmention of a Top-Down Player controller
 	- Includes linear acceleration and correctly handles diagonals
+
+
+### WeaponWithScope
+	- A reference implementation of a Weapon class with a primary fire, secondary fire, and scope.
+	- This implementation does not make assumptions about 2D or 3D space, nor does it spawn objects.
+	Instead, it manages the state machine of a weapon class and emits signals for you to connect to.
+	- Can fire in Automatic, Semi-Automatic, and Charge and Release modes.
+	- Can have a scoped mode enabled, which allows a secondary fire with different properties.
+	- Includes reload behaviour for full clip reload, partial clip reload, shotgun reload, recharge reload,
+	and a "Spill and Refill" reload
+
+	NOTE: It is often better to use the AnimationTree's State Machines to handle weapon behaviour.
+	This implementation is included to serve as a reference for its various behaviours rather
+	than a true implementation of a weapon class.
+
+
