@@ -96,7 +96,7 @@ func _physics_process(delta :float) -> void:
 	
 	
 	# Handle jump
-	if Input.is_action_just_pressed(JUMP_ACTION):
+	if Input.is_action_just_pressed(JUMP_ACTION) and is_on_floor():
 		velocity.y = jump_speed
 	
 	
