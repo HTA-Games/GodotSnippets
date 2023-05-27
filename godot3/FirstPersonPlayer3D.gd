@@ -75,8 +75,7 @@ func _physics_process(delta :float) -> void:
 	
 	
 	# Gravity
-	if !is_on_floor():
-		velocity.y -= gravity_scale * gravity * delta
+	velocity.y -= gravity_scale * gravity * delta
 	
 	
 	# Throttle
